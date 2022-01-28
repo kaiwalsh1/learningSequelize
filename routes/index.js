@@ -11,7 +11,7 @@ const {
 // in apiRoutes
 router.use('/api', apiRoutes);
 
-router.get('/', async (req, res) => {
+router.get('/seed', async (req, res) => {
     const usersToCreate = [
         {
             username: 'Black Mamba',
@@ -24,7 +24,26 @@ router.get('/', async (req, res) => {
             password: 'password',
         },
     ];
-    const users = await User.bulkCreate(usersToCreate);
+    const users = await User.bulkCreate(usersToCreate, {
+        individualHooks: true,
+    });
+
+    const todosToCreate = [
+        {
+            task: 'Become a different animal, but stay the same beast',
+            authorId: users[0].id,
+        },
+        {
+            task: 'Cause raid party to wipe within a few minutes',
+            authorId: users[1].id,
+        }
+    ];
+    const todos = await Todo.bulkCreate(todosToCreate);
+
+    res.json({
+        users,
+        todos,
+    });
 });
 
 module.exports = router;
